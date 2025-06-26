@@ -12,8 +12,9 @@
                 <li class="nav-item"><a class="nav-link" href="../modules/module_types.php">Module Types</a></li>
                 <li class="nav-item"><a class="nav-link" href="../batches/batches.php">Batches</a></li>
                 <li class="nav-item"><a class="nav-link" href="../modules/module_batches.php">Module-Batch</a></li>
+                <li class="nav-item"><a class="nav-link" href="../class_groups/class_group.php">Class Groups</a></li>
                 <li class="nav-item"><a class="nav-link" href="../students/students.php">Students</a></li>
-                <li class="nav-item"><a class="nav-link" href="/students/student_by_module_batch.php">Students by Module-Batch</a></li>
+                <li class="nav-item"><a class="nav-link" href="../students/student_by_module_batch.php">Students by Module-Batch</a></li>
                 <li class="nav-item"><a class="nav-link" href="../attendance/attendance.php">Take Attendance</a></li>
                 <li class="nav-item"><a class="nav-link" href="../attendance/attendance_view.php">View Attendance</a></li>
             </ul>
