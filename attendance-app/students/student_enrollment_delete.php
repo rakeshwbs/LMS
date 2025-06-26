@@ -8,15 +8,10 @@ if (!isset($_SESSION['lecturer'])) {
 }
 
 if (isset($_GET['id'])) {
-    $id = $_GET['id'];
-
-    // Delete the selected enrollment
-    $stmt = $pdo->prepare("DELETE FROM student_module WHERE id = ?");
-    $stmt->execute([$id]);
-
-    header("Location: student_enrollments.php?msg=deleted");
-    exit();
-} else {
-    header("Location: student_enrollments.php");
-    exit();
+    $stmt = $pdo->prepare("DELETE FROM student_enrollments WHERE id = ?");
+    $stmt->execute([$_GET['id']]);
 }
+
+header("Location: student_enrollments.php");
+exit();
+?>

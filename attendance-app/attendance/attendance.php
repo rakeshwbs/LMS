@@ -7,144 +7,114 @@ if (!isset($_SESSION['lecturer'])) {
     exit();
 }
 
-// Load batches (modules are loaded via AJAX)
-$batches = $pdo->query("SELECT id, name FROM batches ORDER BY name")->fetchAll();
-
 $students = [];
-$showForm = false;
+$date = '';
+$module_batch_id = '';
+$step = 1;
+$feedback = '';
 
-if (isset($_POST['load_students'])) {
-    $module_id = $_POST['module_id'];
-    $batch_id = $_POST['batch_id'];
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['step']) && $_POST['step'] == 1) {
+    $module_batch_id = $_POST['module_batch_id'];
     $date = $_POST['date'];
+    $step = 2;
 
-    if ($module_id && $batch_id && $date) {
-        $stmt = $pdo->prepare("
-            SELECT s.id, s.full_name 
-            FROM student_module sm
-            JOIN students s ON sm.student_id = s.id
-            WHERE sm.module_id = ? AND sm.batch_id = ?
-            ORDER BY s.full_name
-        ");
-        $stmt->execute([$module_id, $batch_id]);
-        $students = $stmt->fetchAll();
-        $showForm = true;
-    }
+    $stmt = $pdo->prepare("SELECT s.id, s.full_name, s.student_id
+                           FROM students s
+                           JOIN student_enrollments se ON s.id = se.student_id
+                           WHERE se.module_batch_id = ?
+                           ORDER BY s.full_name");
+    $stmt->execute([$module_batch_id]);
+    $students = $stmt->fetchAll();
 }
 
-// Save attendance
-if (isset($_POST['submit_attendance'])) {
-    $module_id = $_POST['module_id'];
-    $batch_id = $_POST['batch_id'];
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['step']) && $_POST['step'] == 2) {
+    $module_batch_id = $_POST['module_batch_id'];
     $date = $_POST['date'];
+    $attendance = $_POST['attendance'];
 
-    foreach ($_POST['status'] as $student_id => $status) {
-        $stmt = $pdo->prepare("INSERT INTO attendance (student_id, module_id, batch_id, date, status)
-                               VALUES (?, ?, ?, ?, ?)
+    foreach ($attendance as $student_id => $status) {
+        $stmt = $pdo->prepare("INSERT INTO attendance (student_id, module_batch_id, date, status)
+                               VALUES (?, ?, ?, ?)
                                ON DUPLICATE KEY UPDATE status = VALUES(status)");
-        $stmt->execute([$student_id, $module_id, $batch_id, $date, $status]);
+        $stmt->execute([$student_id, $module_batch_id, $date, $status]);
     }
 
-    header("Location: attendance.php?msg=saved");
-    exit();
+    $feedback = "Attendance recorded successfully.";
+    $step = 1;
 }
+
+// Get module-batch list
+$module_batches = $pdo->query("SELECT mb.id, m.title AS module_title, b.name AS batch_name
+                               FROM module_batches mb
+                               JOIN modules m ON mb.module_id = m.id
+                               JOIN batches b ON mb.batch_id = b.id
+                               ORDER BY m.title, b.name")->fetchAll();
 ?>
 
 <?php include '../includes/header.php'; ?>
 
 <h3>Take Attendance</h3>
 
-<?php if (isset($_GET['msg']) && $_GET['msg'] === 'saved'): ?>
-    <div class="alert alert-success">Attendance saved successfully.</div>
+<?php if ($feedback): ?>
+    <div class="alert alert-success"><?= $feedback ?></div>
 <?php endif; ?>
 
-<form method="POST" class="row g-3 mb-4">
-    <div class="col-md-3">
-        <label>Batch</label>
-        <select name="batch_id" id="batchDropdown" class="form-control" required>
-            <option value="">-- Select Batch --</option>
-            <?php foreach ($batches as $b): ?>
-                <option value="<?= $b['id'] ?>"><?= htmlspecialchars($b['name']) ?></option>
+<?php if ($step == 1): ?>
+<form method="POST" class="row g-3">
+    <input type="hidden" name="step" value="1">
+    <div class="col-md-5">
+        <label>Module-Batch</label>
+        <select name="module_batch_id" class="form-control" required>
+            <option value="">-- Select Module-Batch --</option>
+            <?php foreach ($module_batches as $mb): ?>
+                <option value="<?= $mb['id'] ?>"><?= htmlspecialchars($mb['module_title']) ?> - <?= htmlspecialchars($mb['batch_name']) ?></option>
             <?php endforeach; ?>
         </select>
     </div>
-
     <div class="col-md-4">
-        <label>Module</label>
-        <select name="module_id" id="moduleDropdown" class="form-control" required>
-            <option value="">-- Select Batch First --</option>
-        </select>
-    </div>
-
-    <div class="col-md-3">
         <label>Date</label>
         <input type="date" name="date" class="form-control" required>
     </div>
-
-    <div class="col-md-2 align-self-end">
-        <button type="submit" name="load_students" class="btn btn-primary">Load Students</button>
+    <div class="col-md-3 d-flex align-items-end">
+        <button type="submit" class="btn btn-primary w-100">Load Students</button>
     </div>
 </form>
 
-<?php if ($showForm && count($students) > 0): ?>
+<?php elseif ($step == 2): ?>
 <form method="POST">
-    <input type="hidden" name="module_id" value="<?= htmlspecialchars($module_id) ?>">
-    <input type="hidden" name="batch_id" value="<?= htmlspecialchars($batch_id) ?>">
+    <input type="hidden" name="step" value="2">
+    <input type="hidden" name="module_batch_id" value="<?= htmlspecialchars($module_batch_id) ?>">
     <input type="hidden" name="date" value="<?= htmlspecialchars($date) ?>">
 
-    <table class="table table-bordered">
+    <h5>Date: <?= htmlspecialchars($date) ?></h5>
+
+    <table class="table table-bordered mt-3">
         <thead>
             <tr>
                 <th>#</th>
-                <th>Student Name</th>
+                <th>Student</th>
                 <th>Status</th>
             </tr>
         </thead>
         <tbody>
             <?php foreach ($students as $index => $s): ?>
-            <tr>
-                <td><?= $index + 1 ?></td>
-                <td><?= htmlspecialchars($s['full_name']) ?></td>
-                <td>
-                    <select name="status[<?= $s['id'] ?>]" class="form-control" required>
-                        <option value="Present">Present</option>
-                        <option value="Absent">Absent</option>
-                    </select>
-                </td>
-            </tr>
+                <tr>
+                    <td><?= $index + 1 ?></td>
+                    <td><?= htmlspecialchars($s['full_name']) ?> (<?= $s['student_id'] ?>)</td>
+                    <td>
+                        <select name="attendance[<?= $s['id'] ?>]" class="form-control">
+                            <option value="Present">Present</option>
+                            <option value="Absent">Absent</option>
+                        </select>
+                    </td>
+                </tr>
             <?php endforeach; ?>
         </tbody>
     </table>
 
-    <button type="submit" name="submit_attendance" class="btn btn-success">Save Attendance</button>
+    <button type="submit" class="btn btn-success">Submit Attendance</button>
+    <a href="attendance.php" class="btn btn-secondary">Cancel</a>
 </form>
-<?php elseif ($showForm): ?>
-    <div class="alert alert-warning">No students found for this module and batch.</div>
 <?php endif; ?>
-
-<script>
-document.getElementById('batchDropdown').addEventListener('change', function () {
-    const batchId = this.value;
-    const moduleDropdown = document.getElementById('moduleDropdown');
-
-    moduleDropdown.innerHTML = '<option value="">Loading...</option>';
-
-    if (batchId) {
-        fetch('get_modules_by_batch.php?batch_id=' + batchId)
-            .then(response => response.json())
-            .then(data => {
-                moduleDropdown.innerHTML = '<option value="">-- Select Module --</option>';
-                data.forEach(function (mod) {
-                    const option = document.createElement('option');
-                    option.value = mod.id;
-                    option.textContent = mod.title;
-                    moduleDropdown.appendChild(option);
-                });
-            });
-    } else {
-        moduleDropdown.innerHTML = '<option value="">-- Select Batch First --</option>';
-    }
-});
-</script>
 
 <?php include '../includes/footer.php'; ?>

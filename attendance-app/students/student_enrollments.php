@@ -9,14 +9,14 @@ if (!isset($_SESSION['lecturer'])) {
 
 // Fetch all enrollments
 $stmt = $pdo->query("
-    SELECT sm.id, s.full_name, s.student_id, m.title AS module_title, b.name AS batch_name
-    FROM student_module sm
-    JOIN students s ON sm.student_id = s.id
-    JOIN modules m ON sm.module_id = m.id
-    JOIN batches b ON sm.batch_id = b.id
-    ORDER BY s.full_name, b.name, m.title
+    SELECT se.id AS enrollment_id, s.full_name, s.student_id, m.title AS module_title, b.name AS batch_name
+    FROM student_enrollments se
+    JOIN students s ON se.student_id = s.id
+    JOIN module_batches mb ON se.module_batch_id = mb.id
+    JOIN modules m ON mb.module_id = m.id
+    JOIN batches b ON mb.batch_id = b.id
+    ORDER BY m.title, b.name, s.full_name
 ");
-
 $enrollments = $stmt->fetchAll();
 ?>
 
@@ -24,29 +24,27 @@ $enrollments = $stmt->fetchAll();
 
 <h3>Student Enrollments</h3>
 
-<a href="student_enroll.php" class="btn btn-primary mb-3">+ Enroll Another Student</a>
-
-<table class="table table-bordered">
+<table class="table table-bordered table-striped">
     <thead>
         <tr>
             <th>#</th>
             <th>Student ID</th>
-            <th>Full Name</th>
+            <th>Name</th>
             <th>Module</th>
             <th>Batch</th>
-            <th>Actions</th>
+            <th>Action</th>
         </tr>
     </thead>
     <tbody>
-        <?php foreach ($enrollments as $index => $en): ?>
+        <?php foreach ($enrollments as $index => $enr): ?>
         <tr>
             <td><?= $index + 1 ?></td>
-            <td><?= htmlspecialchars($en['student_id']) ?></td>
-            <td><?= htmlspecialchars($en['full_name']) ?></td>
-            <td><?= htmlspecialchars($en['module_title']) ?></td>
-            <td><?= htmlspecialchars($en['batch_name']) ?></td>
+            <td><?= htmlspecialchars($enr['student_id']) ?></td>
+            <td><?= htmlspecialchars($enr['full_name']) ?></td>
+            <td><?= htmlspecialchars($enr['module_title']) ?></td>
+            <td><?= htmlspecialchars($enr['batch_name']) ?></td>
             <td>
-                <a href="student_enrollment_delete.php?id=<?= $en['id'] ?>" class="btn btn-sm btn-danger" onclick="return confirm('Remove this enrollment?')">Remove</a>
+                <a href="student_enrollment_delete.php?id=<?= $enr['enrollment_id'] ?>" class="btn btn-sm btn-danger" onclick="return confirm('Unenroll this student?')">Unenroll</a>
             </td>
         </tr>
         <?php endforeach; ?>
