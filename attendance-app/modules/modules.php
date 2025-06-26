@@ -18,6 +18,7 @@ $modules = $stmt->fetchAll();
 
 <h3>Modules</h3>
 <a href="module_create.php" class="btn btn-success mb-3">Add New Module</a>
+<a href="module_import.php" class="btn btn-warning mb-3">Import from CSV</a>
 
 <table class="table table-bordered">
     <thead>

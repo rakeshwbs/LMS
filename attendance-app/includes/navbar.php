@@ -8,18 +8,18 @@
 
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav me-auto">
-                <li class="nav-item"><a class="nav-link" href="../modules/modules.php">Modules</a></li>
-                <li class="nav-item"><a class="nav-link" href="../modules/module_types.php">Module Types</a></li>
-                <li class="nav-item"><a class="nav-link" href="../batches/batches.php">Batches</a></li>
-                <li class="nav-item"><a class="nav-link" href="../modules/module_batches.php">Module-Batch</a></li>
-                <li class="nav-item"><a class="nav-link" href="../class_groups/class_group.php">Class Groups</a></li>
-                <li class="nav-item"><a class="nav-link" href="../students/students.php">Students</a></li>
-                <li class="nav-item"><a class="nav-link" href="../students/student_by_module_batch.php">Students by Module-Batch</a></li>
-                <li class="nav-item"><a class="nav-link" href="../attendance/attendance.php">Take Attendance</a></li>
-                <li class="nav-item"><a class="nav-link" href="../attendance/attendance_view.php">View Attendance</a></li>
+                <li class="nav-item"><a class="nav-link" href="<?= BASE_URL ?>modules/modules.php">Modules</a></li>
+                <li class="nav-item"><a class="nav-link" href="<?= BASE_URL ?>modules/module_types.php">Module Types</a></li>
+                <li class="nav-item"><a class="nav-link" href="<?= BASE_URL ?>batches/batches.php">Batches</a></li>
+                <li class="nav-item"><a class="nav-link" href="<?= BASE_URL ?>modules/module_batches.php">Module-Batch</a></li>
+                <li class="nav-item"><a class="nav-link" href="<?= BASE_URL ?>class_groups/class_group.php">Class Groups</a></li>
+                <li class="nav-item"><a class="nav-link" href="<?= BASE_URL ?>students/student.php">Students</a></li>
+                <li class="nav-item"><a class="nav-link" href="<?= BASE_URL ?>students/student_by_module_batch.php">Students by Module-Batch</a></li>
+                <li class="nav-item"><a class="nav-link" href="<?= BASE_URL ?>attendance/attendance.php">Take Attendance</a></li>
+                <li class="nav-item"><a class="nav-link" href="<?= BASE_URL ?>attendance/attendance_view.php">View Attendance</a></li>
             </ul>
             <ul class="navbar-nav">
-                <li class="nav-item"><a class="nav-link" href="../logout.php">Logout</a></li>
+                <li class="nav-item"><a class="nav-link" href="<?= BASE_URL ?>logout.php">Logout</a></li>2
             </ul>
         </div>
     </div>

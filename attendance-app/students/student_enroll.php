@@ -1,4 +1,8 @@
 <?php
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+
 require_once '../helpers/db.php';
 session_start();
 
@@ -100,7 +104,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </div>
 
     <button type="submit" class="btn btn-primary">Enroll Selected</button>
-    <a href="student_list.php" class="btn btn-secondary">Back</a>
+    <a href="student_by_module_batch.php" class="btn btn-secondary">Back</a>
 </form>
 
 <?php include '../includes/footer.php'; ?>

@@ -1,9 +1,9 @@
 <?php
+include '../includes/header.php'; 
 require_once '../helpers/db.php';
-session_start();
 
 if (!isset($_SESSION['lecturer'])) {
-    header("Location: ../login.php");
+    header("Location: /attendance-app/login.php");
     exit();
 }
 
@@ -41,38 +41,6 @@ $groupsStmt = $pdo->query("
 ");
 $class_groups = $groupsStmt->fetchAll();
 ?>
-
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Manage Class Groups</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-</head>
-<body>
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-  <div class="container-fluid">
-    <a class="navbar-brand" href="#">Attendance</a>
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-      <span class="navbar-toggler-icon"></span>
-    </button>
-    <div class="collapse navbar-collapse" id="navbarNav">
-      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-        <li class="nav-item"><a class="nav-link" href="/modules/module.php">Modules</a></li>
-        <li class="nav-item"><a class="nav-link" href="/modules/module_types.php">Module Types</a></li>
-        <li class="nav-item"><a class="nav-link" href="/batches/batch.php">Batches</a></li>
-        <li class="nav-item"><a class="nav-link" href="/module_batches/module_batch.php">Module-Batch</a></li>
-        <li class="nav-item"><a class="nav-link active" href="/class_groups/class_group.php">Class Groups</a></li>
-        <li class="nav-item"><a class="nav-link" href="/students/student.php">Students</a></li>
-        <li class="nav-item"><a class="nav-link" href="/attendance/attendance_take.php">Take Attendance</a></li>
-        <li class="nav-item"><a class="nav-link" href="/attendance/attendance_view.php">View Attendance</a></li>
-      </ul>
-      <span class="navbar-text">
-        <a href="/logout.php" class="text-light">Logout</a>
-      </span>
-    </div>
-  </div>
-</nav>
 
 <div class="container mt-4">
     <h3>Manage Class Groups</h3>
@@ -140,6 +108,4 @@ $class_groups = $groupsStmt->fetchAll();
     </table>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-</body>
-</html>
+<?php include '../includes/footer.php';  ?>

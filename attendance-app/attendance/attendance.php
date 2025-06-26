@@ -1,4 +1,7 @@
 <?php
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
 require_once '../helpers/db.php';
 session_start();
 
@@ -33,7 +36,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['step']) && $_POST['st
     $attendance = $_POST['attendance'];
 
     foreach ($attendance as $student_id => $status) {
-        $stmt = $pdo->prepare("INSERT INTO attendance (student_id, module_batch_id, date, status)
+        $stmt = $pdo->prepare("INSERT INTO student_attendance (student_id, module_batch_id, date, status)
                                VALUES (?, ?, ?, ?)
                                ON DUPLICATE KEY UPDATE status = VALUES(status)");
         $stmt->execute([$student_id, $module_batch_id, $date, $status]);

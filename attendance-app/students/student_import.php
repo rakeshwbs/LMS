@@ -49,7 +49,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['csv_file'])) {
         <div class="form-text">CSV must include columns: student_id, full_name, email, phone</div>
     </div>
     <button type="submit" class="btn btn-primary">Import</button>
-    <a href="students.php" class="btn btn-secondary">Back</a>
+    <a href="student.php" class="btn btn-secondary">Back</a>
 </form>
 
 <?php include '../includes/footer.php'; ?>
